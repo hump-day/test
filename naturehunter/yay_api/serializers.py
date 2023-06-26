@@ -39,13 +39,20 @@ class observationSerializer(serializers.ModelSerializer):
     def create(self, validated_data: dict):
 
         images = validated_data.pop('images')
-        temp = models.observation.objects.create(**validated_data)
+        temp = super().create(validated_data)
         for image in images:
-            models.obvs_image.objects.create(**image)
-
+            temp.images.create(**image)
 
         print(validated_data)
-        #super().create(validated_data)
+        # super().create(validated_data)
+        return temp
+
+    def update(self, instance, validated_data):
+        images = validated_data.pop('images')
+        temp = super().update(instance, validated_data)
+
+        for image in images:
+            temp.images.create(**image)
         return temp
 
 
@@ -59,11 +66,11 @@ class transectSerializer(serializers.ModelSerializer):
     nodes = transect_nodeSerializer(many=True)
     observations = observationSerializer(many=True)
 
-    #observations = serializers.HyperlinkedRelatedField(
+    # observations = serializers.HyperlinkedRelatedField(
     #    many=True,
     #    view_name='observation-detail',
     #    read_only=True,
-    #)
+    # )
 
     class Meta:
         model = models.transect
@@ -76,14 +83,27 @@ class transectSerializer(serializers.ModelSerializer):
         temp = models.transect.objects.create(**validated_data)
 
         for node in nodes:
-            node['transect'] = temp
-            models.transect_node.objects.create(**node)
+            temp.nodes.create(**node)
 
         for observation in observations:
-            observation['transect'] = temp
-            models.observation.objects.create(**observation)
+            temp.observations.create(**observation)
 
         return temp
+
+    def update(self, instance, validated_data):
+        nodes = validated_data.pop('nodes')
+        observations = validated_data.pop('observations')
+
+        temp = super().update(instance, validated_data)
+
+        for node in nodes:
+            temp.nodes.create(**node)
+
+        for observation in observations:
+            temp.observations.create(**observation)
+
+        return temp
+
 
 """{
     "latitude": 0,
