@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, generics
 from . import serializers, models
 from django.contrib.auth.models import User, Group
 
@@ -19,3 +19,13 @@ class groupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = serializers.groupSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class transects(viewsets.ModelViewSet):
+    queryset = models.transect.objects.all().order_by('date')
+    serializer_class = serializers.transectSerializer
+
+
+class observations(viewsets.ModelViewSet):
+    queryset = models.observation.objects.all().order_by('transect')
+    serializer_class = serializers.observationSerializer
