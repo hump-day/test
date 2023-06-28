@@ -77,6 +77,7 @@ class transectSerializer(serializers.ModelSerializer):
         fields = ['name', 'user', 'date', 'nodes', 'observations']
 
     def create(self, validated_data):
+        print(validated_data)
         nodes = validated_data.pop('nodes')
         observations = validated_data.pop('observations')
 
