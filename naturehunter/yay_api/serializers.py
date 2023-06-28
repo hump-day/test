@@ -34,7 +34,8 @@ class observationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.observation
-        fields = ['latitude', 'longitude', 'species', 'date_offset', 'transect', 'images']
+        fields = ['latitude', 'longitude', 'species', 'date_offset', 'images']
+        optional_fields = ['transect']
 
     def create(self, validated_data: dict):
 
@@ -87,7 +88,10 @@ class transectSerializer(serializers.ModelSerializer):
             temp.nodes.create(**node)
 
         for observation in observations:
-            temp.observations.create(**observation)
+            images = observation.pop('images')
+            a = temp.observations.create(**observation)
+            for image in images:
+                a.images.create(**image)
 
         return temp
 
@@ -101,7 +105,10 @@ class transectSerializer(serializers.ModelSerializer):
             temp.nodes.create(**node)
 
         for observation in observations:
-            temp.observations.create(**observation)
+            images = observation.pop('images')
+            a = temp.observations.create(**observation)
+            for image in images:
+                a.images.create(**image)
 
         return temp
 
